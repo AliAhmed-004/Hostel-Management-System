@@ -1,30 +1,27 @@
 class Room {
-    int roomNumber;
-    int studentCapacity;
-    int studentsInRoom;
-    Student next;
-    Student prev;
+    
 
-    public Room(int roomNumber) {
-        this.roomNumber = roomNumber;
-        this.studentCapacity = 4;
-        this.studentsInRoom = 0;
-        this.next = this.prev = null;
+    private static int roomCounter = 1;
+    private final int roomNumber;
+    private final int studentCapacity;
+    private Student head;
+
+    public Room(int studentCapacity) {
+        this.roomNumber = roomCounter++;
+        this.studentCapacity = studentCapacity;
+        this.head = null;
     }
 
-    Student head;
-
-    // ADD STUDENT
+    // ADD STUDENT METHOD
     // <============================================
     public void addStudent(Student student) {
         if (head == null) {
             head = student;
             student.roomNumber = roomNumber;
-            studentsInRoom++;
             return;
         }
 
-        if (studentsInRoom < studentCapacity) {
+        if (getNumberOfStudents() < studentCapacity) {
             Student currentStudent = head;
             while (currentStudent.next != null) {
                 currentStudent = currentStudent.next;
@@ -33,46 +30,94 @@ class Room {
             currentStudent.next = student;
             student.prev = currentStudent;
             student.roomNumber = roomNumber;
-            studentsInRoom++;
         } else {
-            new Room(roomNumber + 1).addStudent(student);
+            new Room(studentCapacity).addStudent(student);
         }
     }
 
-    // DELETE STUDENT METHOD
+    // REMOVE STUDENT
     // <============================================
-    public void removeStudent(String name) {
+    public void removeStudent(Student student) {
         if (head == null) {
             System.out.println("Room is empty");
             return;
         }
 
-        // deletion at start
-        if (head.studentName.equals(name)) {
+        // Deletion at start
+        if (head.studentName.equals(student.studentName)) {
             head = head.next;
-            head.prev = null;
-            studentsInRoom--;
+            if (head != null) {
+                head.prev = null;
+            }
             return;
         }
 
+        // Deletion in between
         Student currentStudent = head;
-        // deletion in middle
-        while (currentStudent.next != null) {
-            if (currentStudent.studentName.equals(name)) {
-                currentStudent.prev.next = currentStudent.next;
-                currentStudent.next.prev = currentStudent.prev;
-                studentsInRoom--;
+
+        while (currentStudent != null) {
+            if (currentStudent.studentName.equals(student.studentName)) {
+                if (currentStudent.next == null) {
+                    // If the student to be removed is the last node
+                    currentStudent.prev.next = null;
+                } else {
+                    currentStudent.next.prev = currentStudent.prev;
+                    currentStudent.prev.next = currentStudent.next;
+                }
                 return;
             }
             currentStudent = currentStudent.next;
         }
-
-        // deletion at end
-        currentStudent.prev.next = null;
-        studentsInRoom--;
     }
 
-    // CHECK STUDENTS IN ROOM
+    // SEARCH FOR A STUDENT
+    // <============================================
+    public Student searchStudent(String studentName) {
+        Student currentStudent = head;
+        while (currentStudent != null) {
+            if (currentStudent.studentName.equals(studentName)) {
+                return currentStudent;
+            }
+            currentStudent = currentStudent.next;
+        }
+        return null; // Student not found
+    }
+
+    // GET THE NUMBER OF STUDENTS
+    // <============================================
+    public int getNumberOfStudents() {
+        int count = 0;
+        Student currentStudent = head;
+        while (currentStudent != null) {
+            count++;
+            currentStudent = currentStudent.next;
+        }
+        return count;
+    }
+
+    // CLEAR ALL STUDENTS
+    // <============================================
+    public void clearStudents() {
+        head = null;
+    }
+
+    // PRINT ROOM DETAILS
+    // <============================================
+    public void printRoomDetails() {
+        System.out.println("Room Number: " + roomNumber);
+        System.out.println("Room Capacity: " + studentCapacity);
+        System.out.println("Number of Students: " + getNumberOfStudents());
+        System.out.println("Students in Room:");
+        traverseStudents();
+    }
+
+    // CHECK IF THE ROOM IS FULL
+    // <============================================
+    public boolean isRoomFull() {
+        return getNumberOfStudents() >= studentCapacity;
+    }
+
+    // TRAVERSE STUDENTS IN ROOM
     // <============================================
     public void traverseStudents() {
         if (head == null) {
@@ -89,9 +134,18 @@ class Room {
         }
     }
 
-    // GET ROOM CAPACITY
+    // GET ROOM NUMBER
     // <============================================
-    public int getstudentCapacity() {
-        return studentCapacity;
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
+    // GET NEXT ROOM
+    // <============================================
+    public Room getNextRoom() {
+        if (roomNumber < roomCounter) {
+            return new Room(studentCapacity);
+        }
+        return null;
     }
 }
