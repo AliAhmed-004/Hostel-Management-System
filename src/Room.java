@@ -1,5 +1,4 @@
 class Room {
-    
 
     private static int roomCounter = 1;
     private final int roomNumber;
