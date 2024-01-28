@@ -1,13 +1,13 @@
 class Room {
     int roomNumber;
-    int roomCapacity;
+    int studentCapacity;
     int studentsInRoom;
     Student next;
     Student prev;
 
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
-        this.roomCapacity = 4;
+        this.studentCapacity = 4;
         this.studentsInRoom = 0;
         this.next = this.prev = null;
     }
@@ -19,11 +19,12 @@ class Room {
     public void addStudent(Student student) {
         if (head == null) {
             head = student;
+            student.roomNumber = roomNumber;
             studentsInRoom++;
             return;
         }
 
-        if (studentsInRoom < roomCapacity) {
+        if (studentsInRoom < studentCapacity) {
             Student currentStudent = head;
             while (currentStudent.next != null) {
                 currentStudent = currentStudent.next;
@@ -31,9 +32,10 @@ class Room {
 
             currentStudent.next = student;
             student.prev = currentStudent;
+            student.roomNumber = roomNumber;
             studentsInRoom++;
         } else {
-            System.out.println("Room Overflow");
+            new Room(roomNumber + 1).addStudent(student);
         }
     }
 
@@ -85,5 +87,11 @@ class Room {
             currentStudent = currentStudent.next;
             i++;
         }
+    }
+
+    // GET ROOM CAPACITY
+    // <============================================
+    public int getstudentCapacity() {
+        return studentCapacity;
     }
 }
